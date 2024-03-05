@@ -131,6 +131,11 @@ def main():
                             _temp_time_table.append([start, end, url])
                             _temp_hash_set.add(url[-10:])
 
+    if len(_temp_time_table) == 0:
+        logging.info("time table is empty.")
+        ws_log.append_row([datetime.now().strftime("%Y/%m/%d %H:%M:%S"), "time table is empty."])
+        return
+
     
     # compaire current time table and previous time table.
     if _temp_hash_set != prev_hash_set:
@@ -144,6 +149,9 @@ def main():
         yt_donloader.download(url_list)
 
         music_files = [yt_donloader.filename(url) for url in url_list]
+        # shuffle
+        import random
+        random.shuffle(music_files)
         print("music_files", music_files)
 
         # stop player
@@ -167,7 +175,12 @@ def main():
 if __name__ == "__main__":
     import time
     while True:
-        main()
+        try:
+            main()
+        except Exception as e:
+            logging.error(e)
+            ws_log.append_row([datetime.now().strftime("%Y/%m/%d %H:%M:%S"), e])
+            
 
         time.sleep(10)
 
